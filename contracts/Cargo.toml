@@ -1,19 +1,26 @@
 [package]
 name = "tp"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", tag = "v1.4.2" }
-tpio.path="io"
-
+tpio.path = "io"
+parity-scale-codec = { version = "*", default-features = false }
+scale-info = { version = "*", default-features = false }
+once_cell = { version = "*", default-features = false }
+gmeta = "*"
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.4.2" }
-tpio.path="io"
-
+tpio.path = "io"
+gmeta = "*"
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.4.2" }
 
-
+# 新增内容
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1

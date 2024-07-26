@@ -1,15 +1,14 @@
-#![no_std]
-
-use codec::{Decode, Encode}; // 引入 codec 库用于序列化和反序列化
+#![no_std] // 使用 no_std，表明不使用标准库
+use parity_scale_codec::{Decode, Encode}; // 使用 parity_scale_codec 库用于序列化和反序列化
 use gmeta::{In, InOut, Metadata, Out}; // 引入 gmeta 库中的相关类型
 use scale_info::TypeInfo; // 引入 scale_info 库用于类型信息
-use gstd::{prelude::*, ActorId}; // 引入 gstd 库中的预置模块和 ActorId 类型
+use gstd::{msg, prelude::*, ActorId}; // 引入 gstd 库中的预置模块和 ActorId 类型
 use gstd::collections::{BTreeMap, BTreeSet}; // 引入 gstd 库中的 BTreeMap 和 BTreeSet 集合类型
 
 pub type TradingPairId = u64; // 定义 TradingPairId 类型为 u64
 pub type EventLogId = u64; // 定义 EventLogId 类型为 u64
 
-/// 定义 ProgramMetadata 结构体
+// 定义 ProgramMetadata 结构体
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
@@ -21,7 +20,7 @@ impl Metadata for ProgramMetadata {
     type State = Out<TradingPairState>; // 状态类型
 }
 
-/// 初始化结构体
+// 初始化结构体
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -30,7 +29,7 @@ pub struct TmgInit {
     pub owner: ActorId, // 初始化时的拥有者
 }
 
-/// 交易对操作的枚举类型
+// 交易对操作的枚举类型
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -47,7 +46,7 @@ pub enum TradingPairAction {
     RemoveEditor(ActorId), // 移除合法编辑者
 }
 
-/// 交易对操作的响应类型
+// 交易对操作的响应类型
 #[derive(Encode, Debug, PartialEq, Eq, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -64,7 +63,7 @@ pub enum TradingPairReply {
     EditorRemoved, // 合法编辑者移除成功
 }
 
-/// 交易对的结构体
+// 交易对的结构体
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -76,7 +75,7 @@ pub struct TradingPair {
     pub last_modified_by: ActorId, // 最后变更账号
 }
 
-/// 事件日志的结构体
+// 事件日志的结构体
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -89,7 +88,7 @@ pub struct EventLog {
     pub details: String, // 操作详情
 }
 
-/// 交易对状态的结构体
+// 交易对状态的结构体
 #[derive(Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -113,4 +112,9 @@ impl TradingPairState {
             event_counter: 0, // 初始事件计数器值为 0
         }
     }
+
+    pub fn is_owner_or_editor(&self, account: ActorId) -> bool {
+        self.owner == account || self.authorized_editors.contains(&account)
+    }
 }
+
