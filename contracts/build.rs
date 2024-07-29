@@ -1,5 +1,6 @@
-use tpio::ProgramMetadata;
+
+use tpio::TradingPairMetadata;
 
 fn main() {
-    gear_wasm_builder::build_with_metadata::<ProgramMetadata>();
+    gear_wasm_builder::build_with_metadata::<TradingPairMetadata>();
 }
